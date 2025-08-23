@@ -15,6 +15,7 @@ AWeaponMaster::AWeaponMaster()
 	SetRootComponent(WeaponModel);
 
 	WeaponModel->SetCastShadow(false);
+
 }
 
 // Called when the game starts or when spawned
@@ -23,7 +24,7 @@ void AWeaponMaster::BeginPlay()
 	Super::BeginPlay();
 
 	FireRate = 1 / FireRate;
-	
+
 }
 
 // Called every frame

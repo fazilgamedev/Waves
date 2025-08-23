@@ -101,7 +101,7 @@ void UArmsAnimInst::HandSway(float DeltaTime)
 
 void UArmsAnimInst::SideRotation(float _SideMove, float DeltaTime)
 {
-	SideMove = UKismetMathLibrary::FInterpTo(SideMove, UKismetMathLibrary::MapRangeClamped(_SideMove, -1.f, 1.f, -6.f, 6.f), DeltaTime, 8.f);
+	SideMove = UKismetMathLibrary::FInterpTo(SideMove, UKismetMathLibrary::MapRangeClamped(_SideMove, -1.f, 1.f, -6.f, 6.f), DeltaTime, 11.f);
 }
 
 void UArmsAnimInst::FrontRotation(float _FrontMove, float DeltaTime)

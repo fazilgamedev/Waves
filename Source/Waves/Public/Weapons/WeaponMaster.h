@@ -7,6 +7,8 @@
 #include "WeaponMaster.generated.h"
 
 class USkeletalMeshComponent;
+class UAnimSequence;
+class UParticleSystem;
 
 UENUM(BlueprintType)
 enum class EWeaponName : uint8 {
@@ -26,6 +28,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USkeletalMeshComponent* WeaponModel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UAnimSequence* FireSeq;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<UParticleSystem*> HitEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Damage;

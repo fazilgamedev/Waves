@@ -10,12 +10,12 @@ class USkeletalMeshComponent;
 class UCameraComponent;
 class AWeaponMaster;
 class UArmsAnimInst;
+class AHUD_Player;
 
 UENUM(BlueprintType)
 enum class EStatus : uint8 {
 	Unarmed,
 	Armed,
-	Reloading
 };
 
 UCLASS()
@@ -34,22 +34,28 @@ public:
 		UCameraComponent* Camera = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float SprintSpeed = 500.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float WalkSpeed = 187.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<AWeaponMaster*> Weapons;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int32 CurrentWeaponINT = -1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<AWeaponMaster> AK47;
+		TSubclassOf<AWeaponMaster> AK47 = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<AWeaponMaster> G17;
+		TSubclassOf<AWeaponMaster> G17 = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		EStatus CurrentStatus;
+		EStatus CurrentStatus = EStatus::Unarmed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector WalkVector;
+		FVector WalkVector = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float SideMove = 0.f;
@@ -70,7 +76,22 @@ public:
 		bool bCanAttack = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bCanAim = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		APlayerController* PCREF = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+		AHUD_Player* HUDREF = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MaxHealth = 100.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Health = MaxHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bIsDead = false;
 
 private:
 
@@ -90,6 +111,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCausor) override;
 
 	UFUNCTION()
 		void LookUp(float Value);
@@ -142,7 +165,8 @@ public:
 	UFUNCTION()
 		void ChangeToUnarmed();
 
-
+	UFUNCTION()
+		void Sprint(float Value);
 	
 	
 };
