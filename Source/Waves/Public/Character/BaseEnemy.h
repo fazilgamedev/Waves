@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "../Interface/DamageInterface.h"
+#include "../Structure/DamageInfo.h"
 #include "BaseEnemy.generated.h"
 
 class UEnemyAnimInst;
@@ -11,7 +13,7 @@ class UAnimMontage;
 class AAIC_BaseEnemy;
 
 UCLASS()
-class WAVES_API ABaseEnemy : public ACharacter
+class WAVES_API ABaseEnemy : public ACharacter, public IDamageInterface
 {
 	GENERATED_BODY()
 
@@ -26,13 +28,7 @@ public:
 		AAIC_BaseEnemy* AIC = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MaxHealth = 100.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Health = MaxHealth;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bIsDead = false;
+		class UDamageSystem* DamageSystem = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<UAnimMontage*> DeathMontage;
@@ -45,13 +41,25 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual float GetCurrentHealth_Implementation() override;
+
+	virtual float GetMaxHealth_Implementation() override;
+
+	virtual float Heal_Implementation(float Amount) override;
+
+	virtual bool TakeDamage_Implementation(FDamageInfo DamageInfo) override;
 
 	UFUNCTION()
 		void OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
 	UFUNCTION()
 		void Death();
+
+	UFUNCTION()
+		void Blocked(bool bCanBeParried);
+
+	UFUNCTION()
+		void DamageResponse(EDamageResponse DamageResponse);
 
 	   	  	
 };

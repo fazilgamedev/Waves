@@ -8,6 +8,7 @@
 #include "TimerManager.h"
 #include "Waves/Public/AI/AIC_BaseEnemy.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
+#include "../Component/DamageSystem.h"
 
 
 // Sets default values
@@ -16,6 +17,10 @@ ABaseEnemy::ABaseEnemy()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	DamageSystem = CreateDefaultSubobject<UDamageSystem>(TEXT("DamageSystem"));
+	DamageSystem->OnDeath.AddDynamic(this, &ABaseEnemy::Death);
+	DamageSystem->OnBlocked.AddDynamic(this, &ABaseEnemy::Blocked);
+	DamageSystem->OnDamageResponse.AddDynamic(this, &ABaseEnemy::DamageResponse);
 }
 
 // Called when the game starts or when spawned
@@ -36,15 +41,24 @@ void ABaseEnemy::Tick(float DeltaTime)
 
 }
 
-float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
+float ABaseEnemy::GetCurrentHealth_Implementation()
 {
-	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	if (Damage <= 0.f) return 0.f;
-	Health -= Damage;
-	if (Health <= 0.f) {
-		Death();
-	}
-	return Damage;
+	return DamageSystem->Health;
+}
+
+float ABaseEnemy::GetMaxHealth_Implementation()
+{
+	return DamageSystem->MaxHealth;
+}
+
+float ABaseEnemy::Heal_Implementation(float Amount)
+{
+	return DamageSystem->Heal(Amount);
+}
+
+bool ABaseEnemy::TakeDamage_Implementation(FDamageInfo DamageInfo)
+{
+	return DamageSystem->TakeDamage(DamageInfo);
 }
 
 void ABaseEnemy::OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload & BranchingPointPayload)
@@ -56,7 +70,6 @@ void ABaseEnemy::OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNot
 
 void ABaseEnemy::Death()
 {
-	bIsDead = true;
 	AIC->BTComp->StopTree(EBTStopMode::Safe);
 	AIC->ClearFocus(EAIFocusPriority::Gameplay);
 	int32 i = FMath::RandRange(0, 1);
@@ -67,4 +80,15 @@ void ABaseEnemy::Death()
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AIC->StopMovement();
 	SetLifeSpan(5.f); 
+}
+
+void ABaseEnemy::Blocked(bool bCanBeParried)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Parried"));
+}
+
+void ABaseEnemy::DamageResponse(EDamageResponse DamageResponse)
+{
+
+	UE_LOG(LogTemp, Warning, TEXT("RESPONSE"));
 }

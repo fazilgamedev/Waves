@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "../Interface/DamageInterface.h"
+#include "../Structure/DamageInfo.h"
 #include "BaseCharacter.generated.h"
 
 class USkeletalMeshComponent;
@@ -19,7 +21,7 @@ enum class EStatus : uint8 {
 };
 
 UCLASS()
-class WAVES_API ABaseCharacter : public ACharacter
+class WAVES_API ABaseCharacter : public ACharacter, public IDamageInterface
 {
 	GENERATED_BODY()
 
@@ -32,6 +34,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UCameraComponent* Camera = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UDamageSystem* DamageSystem = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float SprintSpeed = 500.f;
@@ -114,6 +119,14 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCausor) override;
 
+	virtual float GetCurrentHealth_Implementation() override;
+
+	virtual float GetMaxHealth_Implementation() override;
+
+	virtual float Heal_Implementation(float Amount) override;
+
+	virtual bool TakeDamage_Implementation(FDamageInfo DamageInfo) override;
+
 	UFUNCTION()
 		void LookUp(float Value);
 
@@ -167,6 +180,15 @@ public:
 
 	UFUNCTION()
 		void Sprint(float Value);
+
+	UFUNCTION()
+		void Death();
+
+	UFUNCTION()
+		void Blocked(bool bCanBeParried);
+
+	UFUNCTION()
+		void DamageResponse(EDamageResponse DamageResponse);
 	
 	
 };

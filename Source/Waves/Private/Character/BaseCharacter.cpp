@@ -9,6 +9,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "../Component/DamageSystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/DamageType.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -22,12 +23,16 @@ ABaseCharacter::ABaseCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-
 	Camera->SetupAttachment(RootComponent);
 
 	Arms = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Arms"));
-
 	Arms->SetupAttachment(Camera);
+
+
+	DamageSystem = CreateDefaultSubobject<UDamageSystem>(TEXT("DamageSystem"));
+	DamageSystem->OnDeath.AddDynamic(this, &ABaseCharacter::Death);
+	DamageSystem->OnBlocked.AddDynamic(this, &ABaseCharacter::Blocked);
+	DamageSystem->OnDamageResponse.AddDynamic(this, &ABaseCharacter::DamageResponse);
 
 }
 
@@ -86,6 +91,41 @@ float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const & Damage
 {
 	UE_LOG(LogTemp, Warning, TEXT("Hitt"));
 	return 1.f;
+}
+
+float ABaseCharacter::GetCurrentHealth_Implementation()
+{
+	return DamageSystem->Health;
+}
+
+float ABaseCharacter::GetMaxHealth_Implementation()
+{
+	return DamageSystem->MaxHealth;
+}
+
+float ABaseCharacter::Heal_Implementation(float Amount)
+{
+	return DamageSystem->Heal(Amount);
+}
+
+bool ABaseCharacter::TakeDamage_Implementation(FDamageInfo DamageInfo)
+{
+	return DamageSystem->TakeDamage(DamageInfo);
+}
+
+void ABaseCharacter::Death()
+{
+	UE_LOG(LogTemp, Warning, TEXT("DEAD"));
+}
+
+void ABaseCharacter::Blocked(bool bCanBeParried)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Parried"));
+}
+
+void ABaseCharacter::DamageResponse(EDamageResponse DamageResponse)
+{
+	UE_LOG(LogTemp, Warning, TEXT("RESPONSE"));
 }
 
 void ABaseCharacter::LookUp(float Value)
@@ -165,19 +205,26 @@ void ABaseCharacter::Fire()
 		if (GetCurrentWeapon()->FireSeq) GetCurrentWeapon()->WeaponModel->PlayAnimation(GetCurrentWeapon()->FireSeq, false);
 		PCREF->ClientPlayCameraShake(UFireCamShake::StaticClass(), 1.3f);
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility)) {
-			if (HitResult.GetActor()) {
-				if (HitResult.GetActor()->Tags.Num() > 0) {
-					if (HitResult.GetActor()->ActorHasTag("Metal")) {
+			AActor* HitActor = HitResult.GetActor();
+			if (HitActor) {
+				if (HitActor->Tags.Num() > 0) {
+					if (HitActor->ActorHasTag("Metal")) {
 						UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GetCurrentWeapon()->HitEffect[0], HitResult.Location, HitResult.ImpactNormal.Rotation());
 					}
-					else if (HitResult.GetActor()->ActorHasTag("Enemy")) {
+					else if (HitActor->ActorHasTag("Enemy")) {
 						UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GetCurrentWeapon()->HitEffect[1], HitResult.Location, HitResult.ImpactNormal.Rotation());
-						UGameplayStatics::ApplyPointDamage(HitResult.GetActor(), GetCurrentWeapon()->Damage, (End - Start).GetSafeNormal(), HitResult, PCREF, this, UDamageType::StaticClass());
+						if (HitActor->GetClass()->ImplementsInterface(UDamageInterface::StaticClass())) {
+							FDamageInfo DamageInfo;
+							DamageInfo.Amount = GetCurrentWeapon()->Damage;
+							DamageInfo.DamageType = GetCurrentWeapon()->DamageType;
+							DamageInfo.DamageResponse = GetCurrentWeapon()->DamageResponse;
+							IDamageInterface::Execute_TakeDamage(HitResult.GetActor(), DamageInfo);
+						}
 					}
-					else if (HitResult.GetActor()->ActorHasTag("Wood")) {
+					else if (HitActor->ActorHasTag("Wood")) {
 						UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GetCurrentWeapon()->HitEffect[2], HitResult.Location, HitResult.ImpactNormal.Rotation());
 					}
-					else if (HitResult.GetActor()->ActorHasTag("Ground")) {
+					else if (HitActor->ActorHasTag("Ground")) {
 						UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GetCurrentWeapon()->HitEffect[3], HitResult.Location, HitResult.ImpactNormal.Rotation());
 					}
 				}

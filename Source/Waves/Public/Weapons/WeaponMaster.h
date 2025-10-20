@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../Structure/DamageInfo.h"
 #include "WeaponMaster.generated.h"
 
 class USkeletalMeshComponent;
@@ -27,22 +28,28 @@ public:
 	AWeaponMaster();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USkeletalMeshComponent* WeaponModel;
+		USkeletalMeshComponent* WeaponModel = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UAnimSequence* FireSeq;
+		UAnimSequence* FireSeq = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<UParticleSystem*> HitEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Damage;
+		EDamageType DamageType = EDamageType::None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Range;
+		EDamageResponse DamageResponse = EDamageResponse::None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float FireRate;
+		float Damage = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Range = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float FireRate = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float AimOffset = 0.f;
@@ -57,31 +64,31 @@ public:
 		EWeaponName WeaponName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float VerticalRecoil;
+		float VerticalRecoil = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float HorizontalRecoil;
+		float HorizontalRecoil = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float SideRecoil;
+		float SideRecoil = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float FrontRecoil;
+		float FrontRecoil = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float RightRecoil;
+		float RightRecoil = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float UpRecoil;
+		float UpRecoil = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Recoil_Vertical;
+		float Recoil_Vertical = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Recoil_Horizontal_Left;
+		float Recoil_Horizontal_Left = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Recoil_Horizontal_Right;
+		float Recoil_Horizontal_Right = 0.f;
 
 protected:
 	// Called when the game starts or when spawned
