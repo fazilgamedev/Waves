@@ -20,5 +20,5 @@ void UUW_HealthBar::NativeTick(const FGeometry & Geometry, float InDeltaTime)
 float UUW_HealthBar::UpdateHealth() const
 {
 	if (!CharacterREF) return 0.f;
-	return FMath::Clamp((IDamageInterface::Execute_GetCurrentHealth(CharacterREF) / IDamageInterface::Execute_GetMaxHealth(CharacterREF)), 0.f, 1.f);
+	return FMath::Clamp((IDamageInterface::Execute_GetCurrentHealth(CharacterREF) / IDamageInterface::Execute_GetMaxHealth(CharacterREF)) * 100.f, 0.f, 100.f);
 }

@@ -90,12 +90,6 @@ public:
 		AHUD_Player* HUDREF = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MaxHealth = 100.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Health = MaxHealth;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsDead = false;
 
 private:

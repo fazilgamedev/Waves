@@ -7,6 +7,7 @@
 #include "HUD_Player.generated.h"
 
 class UUW_Crosshair;
+class UUW_HealthBar;
 
 /**
  * 
@@ -24,9 +25,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<UUW_Crosshair> CrosshairWidgetClass = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UUW_HealthBar> HealthBarWidgetClass = nullptr;
+
 	UPROPERTY()
 		UUW_Crosshair* CrosshairWidget = nullptr;
-	
+
+	UPROPERTY()
+		UUW_HealthBar* HealthBarWidget = nullptr;
+
 protected:
 
 	virtual void BeginPlay() override;
