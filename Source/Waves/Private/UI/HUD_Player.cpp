@@ -13,7 +13,7 @@ void AHUD_Player::BeginPlay()
 
 	if (CrosshairWidgetClass) CrosshairWidget = CreateWidget<UUW_Crosshair>(GetWorld(), CrosshairWidgetClass);
 
-	CrosshairWidget->CharacterREF = CharacterREF;
+	//CrosshairWidget->CharacterREF = CharacterREF;
 
 	CrosshairWidget->AddToViewport(0);
 }

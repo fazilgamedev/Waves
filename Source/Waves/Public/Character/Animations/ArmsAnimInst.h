@@ -93,6 +93,10 @@ public:
 
 	UFUNCTION()
 		void HandSway(float DeltaTime);
+
+	UFUNCTION()
+		void DirectionalRotation(float &DirVar, float MoveVar, float DeltaTime, float U, float V, float W);
+
 	UFUNCTION()
 		void SideRotation(float _SideMove, float DeltaTime);
 

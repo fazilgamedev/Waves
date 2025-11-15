@@ -27,8 +27,11 @@ void UArmsAnimInst::NativeUpdateAnimation(float DeltaTime)
 
 	CurrentWeapon = CharacterREF->GetCurrentWeapon();
 
-	SideRotation(CharacterREF->SideMove, DeltaTime);
-	FrontRotation(CharacterREF->FrontMove, DeltaTime);
+	DirectionalRotation(SideMove, CharacterREF->SideMove, DeltaTime, 1.f, 6.f, 11.f);
+	DirectionalRotation(FrontMove, CharacterREF->FrontMove, DeltaTime, 1.f, 2.f, 9.f);
+
+	//SideRotation(CharacterREF->SideMove, DeltaTime);
+	//FrontRotation(CharacterREF->FrontMove, DeltaTime);
 
 	WalkAnim(DeltaTime);
 
@@ -90,13 +93,18 @@ void UArmsAnimInst::HandSway(float DeltaTime)
 {
 	FRotator CurrentRotation = CharacterREF->GetControlRotation();
 	// Clamp if needed
-	TurnRotation = UKismetMathLibrary::RInterpTo(TurnRotation, CurrentRotation - OldRotation, DeltaTime, 9.f);
+	TurnRotation = UKismetMathLibrary::RInterpTo(TurnRotation, CurrentRotation - OldRotation, DeltaTime, 10.f);
 	TurnRotation.Roll = TurnRotation.Pitch * -1.f;
 	TurnRotation.Yaw = FMath::Clamp(TurnRotation.Yaw, -9.f, 9.f);
 	TurnRotation.Roll = FMath::Clamp(TurnRotation.Roll, -9.f, 9.f);
 	TurnLocation.X = TurnRotation.Yaw / 18.f;
 	TurnLocation.Z = TurnRotation.Roll / 18.f;
 	OldRotation = CurrentRotation;
+}
+
+void UArmsAnimInst::DirectionalRotation(float & DirVar, float MoveVar, float DeltaTime, float U, float V, float W)
+{
+	DirVar = UKismetMathLibrary::FInterpTo(DirVar, UKismetMathLibrary::MapRangeClamped(MoveVar, -U, U, -V, V), DeltaTime, W);
 }
 
 void UArmsAnimInst::SideRotation(float _SideMove, float DeltaTime)
@@ -106,7 +114,7 @@ void UArmsAnimInst::SideRotation(float _SideMove, float DeltaTime)
 
 void UArmsAnimInst::FrontRotation(float _FrontMove, float DeltaTime)
 {
-	FrontMove = UKismetMathLibrary::FInterpTo(FrontMove, UKismetMathLibrary::MapRangeClamped(_FrontMove, -1.f, 1.f, -6.f, 6.f), DeltaTime, 8.f);
+	FrontMove = UKismetMathLibrary::FInterpTo(FrontMove, UKismetMathLibrary::MapRangeClamped(_FrontMove, -1.f, 1.f, -2.f, 2.f), DeltaTime, 9.f);
 }
 
 void UArmsAnimInst::InterpRecoil(float DeltaTime)

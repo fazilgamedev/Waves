@@ -22,7 +22,9 @@ EBTNodeResult::Type UBTT_Attack::ExecuteTask(UBehaviorTreeComponent & OwnerComp,
 	CachedAnimInst = CharREF->GetMesh()->GetAnimInstance();
 	ACharacter* TargetPawn = Cast<ACharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AttackTarget.SelectedKeyName));
 	AIC->SetFocus(TargetPawn);
-	float Duration = CachedAnimInst->Montage_Play(AttackMontage, 1.f);
+	i = FMath::RandRange(0, 1);
+	if (!AttackMontage[i]) return EBTNodeResult::Failed;
+	float Duration = CachedAnimInst->Montage_Play(AttackMontage[i], 1.f);
 	if (Duration <= 0.f) return EBTNodeResult::Failed;
 	if (bWaitForMontageToEnd) {
 		CachedAnimInst->OnMontageEnded.AddDynamic(this, &UBTT_Attack::OnMontageEnded);
@@ -43,7 +45,7 @@ void UBTT_Attack::OnTaskFinished(UBehaviorTreeComponent & OwnerComp, uint8 * Nod
 
 void UBTT_Attack::OnMontageEnded(UAnimMontage * Montage, bool bInterrupted)
 {
-	if (!CachedAnimInst || !CachedComp || Montage != AttackMontage) return;
+	if (!CachedAnimInst || !CachedComp || Montage != AttackMontage[i]) return;
 	if (CachedAnimInst) CachedAnimInst->OnMontageEnded.RemoveDynamic(this, &UBTT_Attack::OnMontageEnded);
 	FinishLatentTask(*CachedComp, bInterrupted ? EBTNodeResult::Failed : EBTNodeResult::Succeeded);
 	CachedAnimInst = nullptr;

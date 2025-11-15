@@ -17,9 +17,6 @@ class WAVES_API UUW_Crosshair : public UUserWidget
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class ABaseCharacter* CharacterREF = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UWidgetAnimation* Crosshair = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -32,11 +32,12 @@ private:
 		void OnMontageEnded(class UAnimMontage* Montage, bool bInterrupted);
 
 	UPROPERTY(EditAnywhere)
-		class UAnimMontage* AttackMontage = nullptr;
+		TArray<class UAnimMontage*> AttackMontage;
 
 	UPROPERTY(EditAnywhere)
 		bool bWaitForMontageToEnd = true;
-
+	
+	int32 i;
 	UBehaviorTreeComponent* CachedComp = nullptr;
 	class UAnimInstance* CachedAnimInst = nullptr;
 };

@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Waves/Public/UI/UW_Crosshair.h"
-#include "Waves/Public/Character/BaseCharacter.h"
 #include "Animation/WidgetAnimation.h"
 
 void UUW_Crosshair::NativeConstruct()
