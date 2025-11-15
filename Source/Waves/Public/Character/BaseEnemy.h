@@ -11,6 +11,7 @@
 class UEnemyAnimInst;
 class UAnimMontage;
 class AAIC_BaseEnemy;
+class UCapsuleComponent;
 
 UCLASS()
 class WAVES_API ABaseEnemy : public ACharacter, public IDamageInterface
@@ -29,6 +30,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UDamageSystem* DamageSystem = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UCapsuleComponent* AttackCollider = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<UAnimMontage*> DeathMontage;
@@ -60,6 +64,9 @@ public:
 
 	UFUNCTION()
 		void DamageResponse(EDamageResponse DamageResponse);
+
+	UFUNCTION()
+		void OnWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	   	  	
 };

@@ -1,14 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Waves/Public/Character/BaseEnemy.h"
-#include "Waves/Public/Character/Animations/EnemyAnimInst.h"
+#include "../Character/BaseEnemy.h"
+#include "../Character/Animations/EnemyAnimInst.h"
+#include "../AI/AIC_BaseEnemy.h"
+#include "../Component/DamageSystem.h"
+#include "../Interface/DamageInterface.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Animation/AnimMontage.h"
 #include "TimerManager.h"
-#include "Waves/Public/AI/AIC_BaseEnemy.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
-#include "../Component/DamageSystem.h"
+#include "Components/CapsuleComponent.h"
+
 
 
 // Sets default values
@@ -21,6 +24,13 @@ ABaseEnemy::ABaseEnemy()
 	DamageSystem->OnDeath.AddDynamic(this, &ABaseEnemy::Death);
 	DamageSystem->OnBlocked.AddDynamic(this, &ABaseEnemy::Blocked);
 	DamageSystem->OnDamageResponse.AddDynamic(this, &ABaseEnemy::DamageResponse);
+
+	AttackCollider = CreateDefaultSubobject<UCapsuleComponent>(TEXT("AttackCollider"));
+	AttackCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AttackCollider->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	AttackCollider->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	AttackCollider->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
 }
 
 // Called when the game starts or when spawned
@@ -31,6 +41,11 @@ void ABaseEnemy::BeginPlay()
 	EnemyAnimInst = Cast<UEnemyAnimInst>(GetMesh()->GetAnimInstance());
 
 	AIC = Cast<AAIC_BaseEnemy>(GetController());
+
+	AttackCollider->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "RightHand");
+	AttackCollider->SetRelativeRotation(FRotator(0.f, 0.f, 90.f));
+	AttackCollider->SetRelativeLocation(FVector(0.f, -45.f, 0.f));
+	AttackCollider->OnComponentBeginOverlap.AddDynamic(this, &ABaseEnemy::OnWeaponOverlap);
 
 }
 
@@ -91,4 +106,15 @@ void ABaseEnemy::DamageResponse(EDamageResponse DamageResponse)
 {
 
 	UE_LOG(LogTemp, Warning, TEXT("RESPONSE"));
+}
+
+void ABaseEnemy::OnWeaponOverlap(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+{
+	if (OtherActor->ActorHasTag("Player") && OtherActor->GetClass()->ImplementsInterface(UDamageInterface::StaticClass())) {
+		FDamageInfo DI;
+		DI.Amount = 20.f;
+		DI.DamageResponse = EDamageResponse::HitReaction;
+		DI.DamageType = EDamageType::Melee;
+		IDamageInterface::Execute_TakeDamage(OtherActor, DI);
+	}
 }
