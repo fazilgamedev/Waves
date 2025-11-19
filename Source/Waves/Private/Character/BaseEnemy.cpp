@@ -85,7 +85,8 @@ void ABaseEnemy::OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNot
 
 void ABaseEnemy::Death()
 {
-	AIC->BTComp->StopTree(EBTStopMode::Safe);
+	AIC->GetBrainComponent()->StopLogic("Dead");
+	AIC->BTComp->StopTree(EBTStopMode::Forced);
 	AIC->ClearFocus(EAIFocusPriority::Gameplay);
 	int32 i = FMath::RandRange(0, 1);
 	if (!DeathMontage[i]) return;
