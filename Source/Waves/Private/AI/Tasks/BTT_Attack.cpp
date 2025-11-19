@@ -22,7 +22,7 @@ EBTNodeResult::Type UBTT_Attack::ExecuteTask(UBehaviorTreeComponent & OwnerComp,
 	CachedAnimInst = CharREF->GetMesh()->GetAnimInstance();
 	ACharacter* TargetPawn = Cast<ACharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AttackTarget.SelectedKeyName));
 	AIC->SetFocus(TargetPawn);
-	i = FMath::RandRange(0, 1);
+	i = FMath::RandRange(0, 0);
 	if (!AttackMontage[i]) return EBTNodeResult::Failed;
 	float Duration = CachedAnimInst->Montage_Play(AttackMontage[i], 1.f);
 	if (Duration <= 0.f) return EBTNodeResult::Failed;
